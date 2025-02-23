@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 def get_youtube_transcript_with_searchapi(video_id):
-    api_key = os.environ.get("SEARCHAPI_KEY")
+    api_key = os.getenv("SEARCHAPI_KEY")
     if not api_key:
         raise ValueError("SEARCHAPI_KEY environment variable not set")
     

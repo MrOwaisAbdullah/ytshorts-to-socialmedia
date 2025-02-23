@@ -1,16 +1,13 @@
 import streamlit as st
-from google import genai
-import os
 from modules.slide_generator import create_carousel, create_download_zip, update_slide_content, generate_slides_content, create_style_editor, Slide, CreateLinkedInCarousel
 from modules.linkedin_post import generate_linkedin_posts
 from modules.x_threads import generate_thread_content
 from modules.x_tweets import generate_tweet_content
 from modules.youtube_helpers import extract_youtube_short_id, get_youtube_transcript_with_searchapi
+from modules.ai_client import client, model_name
 import streamlit.components.v1 as components
 import html
-from dotenv import load_dotenv
 
-load_dotenv()
 
 # Custom Copy to Clipboard Function
 def copy_to_clipboard(text):
@@ -54,13 +51,6 @@ def copy_to_clipboard(text):
         height=50,
         scrolling=False,
     )
-
-# Set up Gemini API client
-api_key = os.getenv("GEMINI_API_KEY")
-if not api_key:
-    raise ValueError("GEMINI_API_KEY environment variable not set")
-client = genai.Client(api_key=api_key)
-model_name = "gemini-2.0-flash"
 
 # Initialize session state
 def initialize_session_state():

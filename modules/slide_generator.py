@@ -1,25 +1,15 @@
 import streamlit as st
-import os
-from google import genai
 import json
 import io
+import os
 from PIL import Image, ImageDraw, ImageFont
+from modules.ai_client import client, model_name
 import textwrap
 from zipfile import ZipFile
 import tempfile
 from typing import List
 from pydantic import BaseModel
 from data.templates import sample_templates_carousel
-from dotenv import load_dotenv 
-
-load_dotenv()
-
-# Initialize Gemini API Client 
-api_key = os.getenv("GEMINI_API_KEY")
-if not api_key:
-    raise ValueError("GEMINI_API_KEY environment variable not set")
-client = genai.Client(api_key=api_key)
-model_name = "gemini-2.0-flash"  
 
 # Pydantic models
 class Slide(BaseModel):
@@ -68,7 +58,7 @@ def update_slide():
     """Update current slide based on slider value"""
     st.session_state.current_slide = st.session_state.slide_navigator
     
-def generate_slides_content(transcript, style, client, model_name):
+def generate_slides_content(transcript, style):
     # Enhanced prompt with explicit JSON structure
     prompt = f"""
     You are an expert in creating engaging LinkedIn carousel posts.
@@ -282,7 +272,7 @@ def main():
             if input_text:
                 with st.spinner("Generating slides..."):
                     try:
-                        slides_data = generate_slides_content(input_text, style, client, model_name)
+                        slides_data = generate_slides_content(input_text, style)
                         if slides_data and slides_data.caption and slides_data.slides:
                             st.session_state.slides_data = slides_data
                             st.session_state.edited_slides = slides_data.slides
