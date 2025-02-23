@@ -1,7 +1,7 @@
 # In x_tweets.py
 from clean_output import clean_output
 from review_content import review_generated_tweet
-from templates import prompt_tweet, tweet_template_1, tweet_template_2, tweet_template_3, tweet_template_4, tweet_template_5
+from data.templates import prompt_tweet, tweet_template_1, tweet_template_2, tweet_template_3, tweet_template_4, tweet_template_5
 
 def generate_tweet_content(transcript, context, client, model_name, num_variations=3):
     """

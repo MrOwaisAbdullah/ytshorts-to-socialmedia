@@ -1,6 +1,5 @@
 import re
 
-
 def clean_output(text):
     lines = text.split('\n')
     clean_lines = []

@@ -9,42 +9,28 @@ from zipfile import ZipFile
 import tempfile
 from typing import List
 from pydantic import BaseModel
-from templates import sample_templates_carousel
+from data.templates import sample_templates_carousel
 from dotenv import load_dotenv 
 
 load_dotenv()
 
-# Add at the top of your main app
-st.markdown("""
-    <style>
-    /* Debugging output styling */
-    .debug-output {
-        background: #ffebee;
-        padding: 10px;
-        border-radius: 5px;
-        margin: 10px 0;
-        display: none;  /* Turn on when debugging */
-    }
-    </style>
-""", unsafe_allow_html=True)
-
-# --- Initialize Gemini API Client ---
+# Initialize Gemini API Client 
 api_key = os.getenv("GEMINI_API_KEY")
 if not api_key:
     raise ValueError("GEMINI_API_KEY environment variable not set")
 client = genai.Client(api_key=api_key)
-model_name = "gemini-2.0-flash"  # Adjust model name as needed
+model_name = "gemini-2.0-flash"  
 
-# --- Pydantic models ---
+# Pydantic models
 class Slide(BaseModel):
-    title: str  # Slide title under 60 characters
+    title: str  
     points: List[str]
 
 class CreateLinkedInCarousel(BaseModel):
-    caption: str  # 2-3 engaging sentences with emojis and hashtags for LinkedIn post
-    slides: List[Slide]  # Array of 5-7 slides
+    caption: str
+    slides: List[Slide]
 
-# --- Session State Initialization ---
+# Session State Initialization
 if 'slides_data' not in st.session_state:
     st.session_state.slides_data = None
 if 'slides_images' not in st.session_state:
@@ -63,7 +49,7 @@ if 'current_style' not in st.session_state:
         "guidelines": "Use professional tone, include statistics when available, make content scannable"
     }
 
-# --- Helper Functions ---
+# Helper Functions
 def create_download_zip(slides_images):
     """Create a ZIP file containing all slides"""
     with tempfile.TemporaryDirectory() as temp_dir:
@@ -175,7 +161,7 @@ Content to transform:
             slides=[Slide(**s) for s in valid_slides]
         )
 
-    except Exception as e:
+    except (json.JSONDecodeError, ValueError, TypeError) as e:
         st.error(f"Critical Generation Error: {str(e)}")
         return CreateLinkedInCarousel(
             caption="⚠️ Let's Try Again Together!",
@@ -193,14 +179,14 @@ def create_slide_image(title, points, style):
     draw = ImageDraw.Draw(img)
     try:
         # Use Noto Sans or Segoe UI Emoji for emoji support
-        title_font = ImageFont.truetype("NotoSans-Regular.ttf", 60)  # Download from Google Fonts
+        title_font = ImageFont.truetype("NotoSans-Regular.ttf", 60)
         body_font = ImageFont.truetype("NotoSans-Regular.ttf", 40)
-    except:
+    except OSError:
         try:
             # Fallback to Segoe UI Emoji (Windows)
             title_font = ImageFont.truetype("seguiemj.ttf", 60)
             body_font = ImageFont.truetype("seguiemj.ttf", 40)
-        except:
+        except OSError:
             # Last resort: default font (may not support emojis)
             st.warning("Emoji-supporting font not found. Emojis may appear as squares.")
             title_font = ImageFont.load_default()
@@ -305,7 +291,7 @@ def main():
                             st.success("Slides generated successfully!")
                         else:
                             st.error("Failed to generate slides")
-                    except Exception as e:
+                    except (json.JSONDecodeError, ValueError, TypeError) as e:
                         st.error(f"An error occurred: {str(e)}")
             else:
                 st.error("Please enter some content to generate slides.")

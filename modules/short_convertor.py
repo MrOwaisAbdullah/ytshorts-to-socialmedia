@@ -1,5 +1,5 @@
 import streamlit as st
-from templates import post_reviewer_prompt, templates_1, templates_2, templates_3, templates_5, prompt_short_to_post
+from data.templates import post_reviewer_prompt, templates_1, templates_2, templates_3, templates_5, prompt_short_to_post
 import youtube_helpers
 import os
 from google import genai
@@ -12,9 +12,8 @@ api_key = os.environ.get("GEMINI_API_KEY")
 if not api_key:
     raise ValueError("GEMINI_API_KEY environment variable not set")
 client = genai.Client(api_key=api_key)
-model_name = "gemini-2.0-flash"  # Adjust based on available models
+model_name = "gemini-2.0-flash" 
 
-# Streamlit Layout
 st.title("YouTube Short to LinkedIn Post Converter")
 
 # Video ID Input

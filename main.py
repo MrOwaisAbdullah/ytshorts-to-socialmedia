@@ -1,15 +1,14 @@
 import streamlit as st
 from google import genai
 import os
-from linkedin_post import generate_linkedin_posts
-from x_threads import generate_thread_content
-from x_tweets import generate_tweet_content
-from youtube_helpers import get_youtube_transcript_with_searchapi
-from slide_generator import create_carousel, create_download_zip, update_slide_content, generate_slides_content, create_style_editor, Slide, CreateLinkedInCarousel
+from modules.slide_generator import create_carousel, create_download_zip, update_slide_content, generate_slides_content, create_style_editor, Slide, CreateLinkedInCarousel
+from modules.linkedin_post import generate_linkedin_posts
+from modules.x_threads import generate_thread_content
+from modules.x_tweets import generate_tweet_content
+from modules.youtube_helpers import extract_youtube_short_id, get_youtube_transcript_with_searchapi
 import streamlit.components.v1 as components
 import html
 from dotenv import load_dotenv
-import re
 
 load_dotenv()
 
@@ -62,19 +61,6 @@ if not api_key:
     raise ValueError("GEMINI_API_KEY environment variable not set")
 client = genai.Client(api_key=api_key)
 model_name = "gemini-2.0-flash"
-
-# Function to extract short ID from URL or return ID if provided
-def extract_youtube_short_id(input_string):
-    # Regular expression to match YouTube Shorts URL and extract ID
-    pattern = r'(?:https?://(?:www\.)?youtube\.com/shorts/|https?://youtu\.be/)([a-zA-Z0-9_-]{11})'
-    match = re.search(pattern, input_string)
-    if match:
-        return match.group(1)  # Return the 11-character video ID
-    # If no URL match, assume input is already a video ID
-    if len(input_string) == 11 and input_string.isalnum():
-        return input_string
-    raise ValueError("Invalid YouTube Shorts URL or ID. Please provide a valid URL (e.g., https://youtube.com/shorts/CYTwGx43SzY) or 11-character ID.")
-
 
 # Initialize session state
 def initialize_session_state():
@@ -163,7 +149,7 @@ if st.session_state.selected_tab == "Home":
                 progress_bar.progress(progress_value)
                 progress_text.text("")
                 st.success("Transcript fetched successfully!")
-            except Exception as e:
+            except (ValueError, TypeError) as e:
                 st.error(f"Error fetching transcript: {str(e)}")
 
     if st.session_state.transcript:
@@ -213,7 +199,7 @@ elif st.session_state.selected_tab == "LinkedIn Posts":
                 progress_bar.progress(progress_value)
                 progress_text.text("")
                 st.success("Posts generated successfully!")
-            except Exception as e:
+            except (ValueError, TypeError) as e:
                 st.error(f"Error generating posts: {str(e)}")
 
     if st.session_state.linkedin_posts:
@@ -267,7 +253,7 @@ elif st.session_state.selected_tab == "X Tweets":
                 progress_bar.progress(progress_value)
                 progress_text.text("")
                 st.success(f"Generated {len(tweets)} tweets successfully!")
-            except Exception as e:
+            except (ValueError, TypeError) as e:
                 st.error(f"Error generating tweets: {str(e)}")
 
     if st.session_state.x_tweets:
@@ -321,7 +307,7 @@ elif st.session_state.selected_tab == "X Threads":
                 progress_bar.progress(progress_value)
                 progress_text.text("")
                 st.success(f"Generated {len(threads)} tweets in thread!")
-            except Exception as e:
+            except (ValueError, TypeError) as e:
                 st.error(f"Error generating thread: {str(e)}")
 
     if st.session_state.x_threads:
@@ -377,7 +363,7 @@ elif st.session_state.selected_tab == "LinkedIn Carousel":
                 else:
                     st.error("Failed to generate carousel")
 
-            except Exception as e:
+            except (ValueError, TypeError) as e:
                 st.error(f"Error generating carousel: {str(e)}")
                 st.session_state.carousel_data = CreateLinkedInCarousel(
                     caption="⚠️ Oops! Let's try that again...",

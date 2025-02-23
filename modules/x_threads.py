@@ -1,6 +1,6 @@
-from clean_output import clean_output
-from review_content import review_generated_thread  # Use thread reviewer
-from templates import prompt_thread, sample_templates_thread
+from modules.clean_output import clean_output
+from data.templates import prompt_thread, sample_templates_thread
+from modules.review_content import review_generated_thread
 
 def generate_thread_content(transcript, context, num_tweets, client, model_name):
     """
@@ -26,7 +26,7 @@ def generate_thread_content(transcript, context, num_tweets, client, model_name)
     if len(reviewed_tweets) == num_tweets:
         return reviewed_tweets
     elif len(reviewed_tweets) > num_tweets:
-        return reviewed_tweets[:num_tweets]  # Truncate if too many
+        return reviewed_tweets[:num_tweets]  # Return only the first num_tweets
     else:
         # Generate additional tweets if too few
         missing_count = num_tweets - len(reviewed_tweets)
@@ -34,4 +34,4 @@ def generate_thread_content(transcript, context, num_tweets, client, model_name)
         additional_response = client.models.generate_content(model=model_name, contents=additional_prompt)
         additional_raw = clean_output(additional_response.text.strip())
         additional_tweets = review_generated_thread(additional_raw, client, model_name)
-        return reviewed_tweets + additional_tweets[:missing_count]  # Add only what's needed
+        return reviewed_tweets + additional_tweets[:missing_count] 
