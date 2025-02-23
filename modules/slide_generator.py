@@ -38,35 +38,12 @@ if 'current_style' not in st.session_state:
         "letter_spacing": 0.0,
         "background_type": "Gradient",
         "background_color": None,
-        "background_gradient": ("#2980b9", "#2c3e50"),        
+        "background_gradient": ("#8E2DE2", "#4A00E0"),
         "background_image": None,
         "text_color": "#FFFFFF",
-        "tone": "Professional",
-        "line_height": 1.2,
-        "gradient_direction": "vertical",
-        "decorative_elements": []
+        "font_style": "Professional",
+        "guidelines": "Use professional tone, include statistics when available, make content scannable"
     }
-
-TONE_CONFIG = {
-    "Professional": {
-        "font_family": "Arial",
-        "guidelines": "Formal language, data-driven content, business focus",
-        "color_palette": ["#2C3E50", "#3498DB"],
-        "decorations": ["line-divider"]
-    },
-    "Creative": {
-        "font_family": "Comic Sans MS",
-        "guidelines": "Casual tone, storytelling focus, emojis",
-        "color_palette": ["#E74C3C", "#F1C40F"],
-        "decorations": ["brush-strokes", "abstract-shapes"]
-    },
-    "Modern": {
-        "font_family": "Roboto",
-        "guidelines": "Clean layouts, minimal text, bold visuals",
-        "color_palette": ["#2C3E50", "#ECF0F1"],
-        "decorations": ["geometric-patterns"]
-    }
-}
 
 # Helper Functions
 def create_download_zip(slides_images):
