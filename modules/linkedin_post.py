@@ -1,5 +1,5 @@
 from data.templates import prompt_short_to_post
-from review_content import review_generated_post
+from modules.review_content import review_generated_post
 
 def generate_linkedin_posts(transcript, client, model_name, context_input, num_variations=3):
     posts = []

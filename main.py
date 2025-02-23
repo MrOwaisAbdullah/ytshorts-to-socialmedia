@@ -1,56 +1,11 @@
 import streamlit as st
+from modules.clipboard_copy import copy_to_clipboard
 from modules.slide_generator import create_carousel, create_download_zip, update_slide_content, generate_slides_content, create_style_editor, Slide, CreateLinkedInCarousel
 from modules.linkedin_post import generate_linkedin_posts
 from modules.x_threads import generate_thread_content
 from modules.x_tweets import generate_tweet_content
 from modules.youtube_helpers import extract_youtube_short_id, get_youtube_transcript_with_searchapi
 from modules.ai_client import client, model_name
-import streamlit.components.v1 as components
-import html
-
-
-# Custom Copy to Clipboard Function
-def copy_to_clipboard(text):
-    safe_text = html.escape(text).replace("\n", "\\n")
-    components.html(
-        f"""
-        <html>
-          <head>
-            <style>
-              .copy-button {{
-                background-color: #4CAF50;
-                border: none;
-                color: white;
-                padding: 8px 16px;
-                text-align: center;
-                text-decoration: none;
-                display: inline-block;
-                font-size: 14px;
-                margin: 4px 2px;
-                cursor: pointer;
-                border-radius: 4px;
-              }}
-            </style>
-            <script>
-              function copyText() {{
-                navigator.clipboard.writeText("{safe_text}")
-                  .then(function() {{
-                    alert("Copied to clipboard!");
-                  }})
-                  .catch(function(err) {{
-                    alert("Copy failed: " + err);
-                  }});
-              }}
-            </script>
-          </head>
-          <body>
-            <button class="copy-button" onclick="copyText()">Copy to Clipboard</button>
-          </body>
-        </html>
-        """,
-        height=50,
-        scrolling=False,
-    )
 
 # Initialize session state
 def initialize_session_state():
@@ -258,10 +213,10 @@ elif st.session_state.selected_tab == "X Tweets":
 ### X Threads Tab
 elif st.session_state.selected_tab == "X Threads":
     st.title("Generate X Threads")
-    st.subheader("Transcript:")
-    st.write(st.session_state.transcript)
     context_input = None
     if st.session_state.transcript:
+        st.subheader("Transcript:")
+        st.write(st.session_state.transcript)
         context_input = st.text_area("Enter additional context or details (optional):", height=100)
     num_tweets = st.slider("Number of tweets in thread", 2, 10, 5)
     if not st.session_state.transcript:
@@ -335,7 +290,7 @@ elif st.session_state.selected_tab == "LinkedIn Carousel":
 
                 # Step 2: Generating initial carousel
                 progress_text.text("Generating initial carousel...")
-                carousel_data = generate_slides_content(st.session_state.transcript, st.session_state.carousel_style, client, model_name)
+                carousel_data = generate_slides_content(st.session_state.transcript, st.session_state.carousel_style)
                 progress_value += 0.4  # 40% complete
                 progress_bar.progress(progress_value)
 

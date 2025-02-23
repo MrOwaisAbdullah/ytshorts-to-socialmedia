@@ -1,6 +1,5 @@
-# In x_tweets.py
-from clean_output import clean_output
-from review_content import review_generated_tweet
+from modules.clean_output import clean_output
+from modules.review_content import review_generated_tweet
 from data.templates import prompt_tweet, tweet_template_1, tweet_template_2, tweet_template_3, tweet_template_4, tweet_template_5
 
 def generate_tweet_content(transcript, context, client, model_name, num_variations=3):
@@ -19,9 +18,7 @@ def generate_tweet_content(transcript, context, client, model_name, num_variatio
     
     # Generate exactly num_variations tweets
     for i in range(num_variations):
-        # Cycle through templates
         template = templates[i % len(templates)]
-        # Use the template in the prompt
         prompt = prompt_tweet.format(content=transcript, context=context, post_template=template)
         
         # Generate the initial tweet
@@ -35,9 +32,9 @@ def generate_tweet_content(transcript, context, client, model_name, num_variatio
         # Review the tweet
         reviewed_tweet = review_generated_tweet(single_tweet, client, model_name)
         
-        # Verify character limit (optional safeguard)
+        # Verify character limit
         if len(reviewed_tweet) > 280:
-            reviewed_tweet = reviewed_tweet[:277] + "..."  # Truncate if needed
+            reviewed_tweet = reviewed_tweet[:277] + "..."
         tweet_variations.append(reviewed_tweet)
     
     return tweet_variations
