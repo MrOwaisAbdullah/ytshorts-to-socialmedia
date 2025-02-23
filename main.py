@@ -1,3 +1,5 @@
+from datetime import datetime
+import io
 import streamlit as st
 from modules.clipboard_copy import copy_to_clipboard
 from modules.slide_generator import create_carousel, create_download_zip, update_slide_content, generate_slides_content, create_style_editor, Slide, CreateLinkedInCarousel
@@ -23,13 +25,18 @@ def initialize_session_state():
         st.session_state.carousel_data = None
     if "carousel_style" not in st.session_state:
         st.session_state.carousel_style = {
-            "background_color": "#FFFFFF",
-            "text_color": "#000000",
-            "font_style": "Professional",
+            "background_type": "Gradient",
+            "background_color": None,
+            "background_gradient": ("#2980b9", "#2c3e50"),        
+            "background_image": None,           
+            "text_color": "#FFFFFF",            
+            "font_family": "NotoSans-Regular",  
+            "letter_spacing": 0.0,              
+            "font_style": "Professional",       
             "guidelines": "Use professional tone, include statistics when available, make content scannable"
         }
     if "current_style" not in st.session_state:
-        st.session_state.current_style = st.session_state.carousel_style
+        st.session_state.current_style = st.session_state.carousel_style.copy()  # Use copy() to avoid reference issues
     if 'slides_data' not in st.session_state:
         st.session_state.slides_data = None
     if 'slides_images' not in st.session_state:
@@ -320,18 +327,27 @@ elif st.session_state.selected_tab == "LinkedIn Carousel":
                 update_slide_content()
 
     if st.session_state.carousel_data and st.session_state.get("slides_images"):
-        st.markdown("**Caption**")
+        st.markdown("**LinkedIn Caption** (copy this to your LinkedIn post):")
         st.markdown(
             f'<div class="content-box">{st.session_state.carousel_data.caption}</div>',
             unsafe_allow_html=True
         )
         copy_to_clipboard(st.session_state.carousel_data.caption)
+        st.subheader("Preview Slides")
         create_carousel(st.session_state.slides_images)
-        if st.sidebar.button("Apply Style Changes"):
-            st.session_state.current_style = st.session_state.carousel_style
+        if st.sidebar.button("Apply Style Changes", key="apply_style_button"):
             update_slide_content()
-        zip_data = create_download_zip(st.session_state.slides_images)
-        st.download_button("Download All Slides", zip_data, "linkedin_slides.zip", "application/zip")
+        col1, col2 = st.columns(2)
+        file_name = f"linkedin_slides_{datetime.now().strftime('%Y%m%d_%H%M%S')}.zip"
+        with col1:
+            zip_data = create_download_zip(st.session_state.slides_images)
+            st.download_button(label="📥 Download All Slides", data=zip_data, file_name=file_name, mime="application/zip", key="download_all_button")
+        with col2:
+            if st.button("Show Individual Downloads", key="show_individual_downloads"):
+                for i, img in enumerate(st.session_state.slides_images, 1):
+                    buf = io.BytesIO()
+                    img.save(buf, format='PNG')
+                    st.download_button(label=f"Download Slide {i}", data=buf.getvalue(), file_name=f"{file_name}_{i}.png", mime="image/png", key=f"download_slide_{i}")
 
 # CSS for content boxes
 st.markdown("""
